@@ -6,6 +6,11 @@ using JSON
 import ZMQ
 import ODBC
 
+export newinstrument, updateinstrument, deleteinstrument, listinstruments
+export newuser, updateuser, deleteuser, listusers
+export newserver, updateserver, deleteserver, listservers
+export newjob, updatejob
+
 const dsn = ODBC.DSN("juliatests", "ajkeller", "")
 const where="tcp://127.0.0.1:50001"
 const ctx = ZMQ.Context()
@@ -54,15 +59,23 @@ function listtables(dsn)
     )[:table_name]
 end
 
+"""
+```
+the_nuclear_option(dsn)
+```
+
+Delete all tables associated with `ICDataServer`. Probably not a good idea.
+"""
+function the_nuclear_option(dsn)
+    ODBC.execute!(dsn, """DROP TABLE IF EXISTS users, jobs, servers,
+        instruments, instrumentkinds, notes CASCADE;""")
+end
+
 include("users.jl")
 include("servers.jl")
 include("instruments.jl")
 include("jobs.jl")
 include("setup.jl")
 
-function the_nuclear_option(dsn)
-    ODBC.execute!(dsn, """DROP TABLE IF EXISTS users, jobs, servers,
-        instruments, instrumentkinds, notes CASCADE;""")
-end
 
 end

@@ -17,11 +17,16 @@ cases it may make sense for the tables to be automatically filled with data.
 If new instrument kinds are added to `deps/inskinds.json`, they will be added
 to `instrumentkinds` table. If kinds are encountered in the database that are
 not in the file, they remain in the database and are not deleted.
+
+If new users are added to `deps/users.json`, they will be "upserted" into the
+`users` table (users are created if necessary; if an existing user name is
+attempted to be inserted into the table, then that user has their info updated
+from the json file). Existing users not found in users.json remain in the table.
 """
 function setuptables(dsn, path="")
     if path == ""
         # request path from user
-        println("Setup file directory path? [defaults to ICDataServer/deps]:")
+        println("Path to directory with setup files? [defaults to ICDataServer/deps]:")
         path = chomp(readline(STDIN))
 
         # default
@@ -30,10 +35,16 @@ function setuptables(dsn, path="")
         end
     end
     !ispath(path) && error("could not find path.")
+    println(path)
 
-    userstable(dsn)
-    servertable(dsn)
-    instrkindstable(dsn, path)
+    userstable(dsn, path; filename = "users.json")
+    servertable(dsn, path; filename = "servers.json")
+    restrictiontable(dsn, path; filename = "instrumentkinds.json",
+        tablename = "instrumentkinds", colname = "kind")
+    # restrictiontable(dsn, path; filename = "instrumentmakes.json",
+    #     tablename = "instrumentmakes", colname = "make")
+    # restrictiontable(dsn, path; filename = "instrumentmodels.json",
+    #     tablename = "instrumentmodels", colname = "model")
     instrtable(dsn)
     jobstable(dsn)
     notestable(dsn)
@@ -73,25 +84,26 @@ function instrtable(dsn)
     """)
 end
 
-function instrkindstable(dsn, path)
+function restrictiontable(dsn, path; filename="", tablename="", colname="")
     ODBC.execute!(dsn,
     """
-    CREATE TABLE IF NOT EXISTS instrumentkinds(
-        kind        character varying PRIMARY KEY
+    CREATE TABLE IF NOT EXISTS $tablename(
+        $colname    character varying PRIMARY KEY
     );
     """)
 
-    instrkindspath = joinpath(path, "inskinds.json")
-    if isfile(instrkindspath)
+    ipath = joinpath(path, filename)
+    if isfile(ipath)
         stmt = ODBC.prepare(dsn,
-            "INSERT INTO instrumentkinds VALUES (?) ON CONFLICT DO NOTHING;")
-        for t in JSON.parsefile(instrkindspath)["kind"]
+            "INSERT INTO $tablename VALUES (?) ON CONFLICT DO NOTHING;")
+        for t in JSON.parsefile(ipath)[colname]
             ODBC.execute!(stmt, (t,))
         end
     end
 end
 
-function userstable(dsn)
+function userstable(dsn, path; filename="")
+
     ODBC.execute!(dsn,
     """
     CREATE TABLE IF NOT EXISTS users(
@@ -104,9 +116,24 @@ function userstable(dsn)
         office  character varying
     );
     """)
+
+    ipath = joinpath(path, filename)
+    if isfile(ipath)
+        for d in JSON.parsefile(ipath)["users"]
+            k = keys(d)
+            kstr = reduce((a,b)->a*","*b, "$ki" for ki in k)
+            vstr = reduce((a,b)->a*","*b, "'$(d[ki])'" for ki in k)
+            pstr = reduce((a,b)->a*","*b, "$ki = '$(d[ki])'" for ki in k)
+            query = """
+            INSERT INTO users ($kstr) VALUES ($vstr) ON CONFLICT (uname)
+            DO UPDATE SET $pstr
+            """
+            ODBC.execute!(dsn, query)
+        end
+    end
 end
 
-function servertable(dsn)
+function servertable(dsn, path; filename="")
     ODBC.execute!(dsn,
     """
     CREATE TABLE IF NOT EXISTS servers(
@@ -115,6 +142,21 @@ function servertable(dsn)
         port        integer
     );
     """)
+
+    ipath = joinpath(path, filename)
+    if isfile(ipath)
+        for d in JSON.parsefile(ipath)["servers"]
+            k = keys(d)
+            kstr = reduce((a,b)->a*","*b, "$ki" for ki in k)
+            vstr = reduce((a,b)->a*","*b, "'$(d[ki])'" for ki in k)
+            pstr = reduce((a,b)->a*","*b, "$ki = '$(d[ki])'" for ki in k)
+            query = """
+            INSERT INTO users ($kstr) VALUES ($vstr) ON CONFLICT (name)
+            DO UPDATE SET $pstr
+            """
+            ODBC.execute!(dsn, query)
+        end
+    end
 end
 
 function notestable(dsn)

@@ -26,7 +26,11 @@ docs_dir: 'build'
 
 pages:
 - Home: index.md
-- Overview:
-    - 'Design': design.md
+- Design: design.md
+- API:
+    - 'Jobs': jobs.md
+    - 'Users': users.md
+    - 'Servers': servers.md
+    - 'Instruments': instruments.md
 - Miscellaneous:
     - 'License': LICENSE.md

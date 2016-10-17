@@ -1,0 +1,6 @@
+## Jobs
+
+```@docs
+newjob
+updatejob
+```

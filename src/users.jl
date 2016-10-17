@@ -1,6 +1,6 @@
 """
 ```
-function newuser(dsn, uname, name; email="", phone="", office="")
+newuser(dsn, uname, name; email="", phone="", office="")
 ```
 
 This function creates a new user in the `users` table of the database.
@@ -27,6 +27,41 @@ function newuser(dsn, uname, name; email="", phone="", office="")
     """)
 end
 
+"""
+```
+updateuser(dsn, uname; kwargs...)
+```
+
+Update an existing user in the `users` table, identified by `uname`. Specify
+the fields to update with keyword arguments specified in
+[`ICDataServer.newuser`](@ref).
+"""
+function updateuser(dsn, uname; kwargs...)
+    isempty(kwargs) && return
+    pstr = reduce((a,b)->a*","*b, "$k = '$v'" for (k,v) in kwargs)
+    for (k,v) in kwargs
+        ODBC.execute!(dsn, "UPDATE users SET "*pstr*" WHERE uname = $uname;")
+    end
+end
+
+"""
+```
+deleteuser(dsn, uname)
+```
+
+Delete a user from the `users` table by providing the username.
+"""
+function deleteuser(dsn, uname)
+    ODBC.execute!(dsn, "DELETE FROM users WHERE uname = '$uname';")
+end
+
+"""
+```
+listusers(dsn)
+```
+
+List all users in the `users` table.
+"""
 function listusers(dsn)
     ODBC.query(dsn, "SELECT * FROM users;")
 end

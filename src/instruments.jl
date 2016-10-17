@@ -17,13 +17,13 @@ end
 
 """
 ```
-modifyinstrument(dsn, alias; kwargs...)
+updateinstrument(dsn, alias; kwargs...)
 ```
 
 Update any of the fields for an instrument named `alias`. Possible keyword
 arguments listed in documentation for [`ICDataServer.newinstrument`](@ref).
 """
-function modifyinstrument(dsn, alias; kwargs...)
+function updateinstrument(dsn, alias; kwargs...)
     isempty(kwargs) && return
     pstr = reduce((a,b)->a*","*b, "$k = '$v'" for (k,v) in kwargs)
     ODBC.execute!(dsn, "UPDATE instruments SET "*pstr*" WHERE alias = '$alias';")
@@ -40,6 +40,14 @@ function deleteinstrument(dsn, alias)
     ODBC.execute!(dsn, "DELETE FROM instruments WHERE alias='$alias';")
 end
 
+
+"""
+```
+listinstruments(dsn)
+```
+
+List instruments in the `instruments` table.
+"""
 function listinstruments(dsn)
     ODBC.query(dsn, "SELECT * FROM instruments;")
 end
