@@ -1,15 +1,15 @@
 """
 ```
-newjob(dsn, dataserver; cryostat="", uname="", device="",
-    nmeas=1, jobstart="", jobstop="", jobstatus=0)
+newjob(dsn; cryostat="", uname="", device="",
+    nmeas=1, jobstart="", jobstop="", jobstatus=0, dataserver="")
 ```
 
 Create a new job in the `jobs` table. This function will return a `DataFrame`
 containing the columns `job_id` and `jobsubmit` with the inserted job id
 and job submission time.
 """
-function newjob(dsn, dataserver; cryostat="", uname="", device="",
-    nmeas=1, jobstart="", jobstop="", jobstatus=0)
+function newjob(dsn; cryostat="", uname="", device="",
+    nmeas=1, jobstart="", jobstop="", jobstatus=0, dataserver="")
 
     dformat(x) = x == "" ? :NULL : "'$x'"
     ODBC.query(dsn, """

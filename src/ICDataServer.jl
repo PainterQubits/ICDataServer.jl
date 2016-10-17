@@ -11,42 +11,23 @@ export newuser, updateuser, deleteuser, listusers
 export newserver, updateserver, deleteserver, listservers
 export newjob, updatejob
 
-const dsn = ODBC.DSN("juliatests", "ajkeller", "")
-const where="tcp://127.0.0.1:50001"
 const ctx = ZMQ.Context()
-const s = ZMQ.Socket(ctx, ZMQ.SUB)
-ZMQ.subscribe(s)
-ZMQ.connect(s, where)
-Plots.plotlyjs()
+const jobsock = ZMQ.Socket(ctx, ZMQ.REP)
 
-const context = Dict{Symbol,Any}()
+confpath = joinpath(Pkg.dir("ICDataServer"), "deps", "config.json")
+if isfile(confpath)
+    confd = JSON.parsefile(confpath)
+    if reduce(&, k in keys(confd) for k in
+        ("jobsock", "dsn", "username", "password"))
 
-function hear(context)
-    while true
-        msg = ZMQ.recv(s)
-        out = convert(IOStream, msg)
-        seekstart(out)
-        d = deserialize(out)
-        handle(d, context)
+        ZMQ.bind(jobsock, d["jobsock"])
+        const dsn = ODBC.DSN(d["db"], d["username"], d["password"])
+    else
+        error("set `dbserver` key in $(confpath) to have a valid ",
+            "ZeroMQ connection string.")
     end
-end
-
-function handle(x::PlotSetup, context)
-    context[:setup] = x
-    A = (x.arrtype)(x.size...)
-    A[:] = zero(eltype(A))
-    context[:array] = A
-    context[:plot] = plot(A, show=true)
-    yield()
-end
-
-function handle(pt::PlotPoint, context)
-    A = context[:array]
-    A[pt.inds...] = pt.v
-
-    p = context[:plot]
-    x = p[1][1][:x]
-    p[1] = (x, A)
+else
+    error("config file not found at $(confpath).")
 end
 
 function listtables(dsn)
