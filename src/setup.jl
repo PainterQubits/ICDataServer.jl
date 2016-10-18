@@ -56,7 +56,7 @@ function jobstable(dsn)
     CREATE TABLE IF NOT EXISTS jobs(
         job_id      bigserial PRIMARY KEY,
         cryostat    character varying,
-        uname       character varying REFERENCES users(uname),
+        username    character varying REFERENCES users(username),
         device      character varying,
         nmeas       integer,
         jobsubmit   timestamp NOT NULL,
@@ -107,13 +107,13 @@ function userstable(dsn, path; filename="")
     ODBC.execute!(dsn,
     """
     CREATE TABLE IF NOT EXISTS users(
-        uname   character varying PRIMARY KEY,
-        first   character varying,
-        middle  character varying,
-        last    character varying,
-        email   character varying,
-        phone   character varying,
-        office  character varying
+        username  character varying PRIMARY KEY,
+        first     character varying,
+        middle    character varying,
+        last      character varying,
+        email     character varying,
+        phone     character varying,
+        office    character varying
     );
     """)
 
@@ -125,7 +125,7 @@ function userstable(dsn, path; filename="")
             vstr = reduce((a,b)->a*","*b, "'$(d[ki])'" for ki in k)
             pstr = reduce((a,b)->a*","*b, "$ki = '$(d[ki])'" for ki in k)
             query = """
-            INSERT INTO users ($kstr) VALUES ($vstr) ON CONFLICT (uname)
+            INSERT INTO users ($kstr) VALUES ($vstr) ON CONFLICT (username)
             DO UPDATE SET $pstr
             """
             ODBC.execute!(dsn, query)
@@ -138,7 +138,7 @@ function servertable(dsn, path; filename="")
     """
     CREATE TABLE IF NOT EXISTS servers(
         alias       character varying PRIMARY KEY,
-        addr        character varying NOT NULL,
+        address     character varying NOT NULL,
         port        integer
     );
     """)
@@ -151,7 +151,7 @@ function servertable(dsn, path; filename="")
             vstr = reduce((a,b)->a*","*b, "'$(d[ki])'" for ki in k)
             pstr = reduce((a,b)->a*","*b, "$ki = '$(d[ki])'" for ki in k)
             query = """
-            INSERT INTO users ($kstr) VALUES ($vstr) ON CONFLICT (name)
+            INSERT INTO servers ($kstr) VALUES ($vstr) ON CONFLICT (alias)
             DO UPDATE SET $pstr
             """
             ODBC.execute!(dsn, query)
@@ -165,9 +165,9 @@ function notestable(dsn)
     CREATE TABLE IF NOT EXISTS notes(
         note_id  serial PRIMARY KEY,
         job_id   bigint REFERENCES jobs(job_id) NOT NULL,
-        uname    character varying REFERENCES users(uname) NOT NULL,
+        username character varying REFERENCES users(username) NOT NULL,
         dt       timestamp NOT NULL,
-        notes    character varying NOT NULL
+        note     character varying NOT NULL
     );
     """)
 end

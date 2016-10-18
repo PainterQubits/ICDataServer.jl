@@ -1,12 +1,12 @@
 """
 ```
-newuser(dsn, uname, name; email="", phone="", office="")
+newuser(dsn, username, name; email="", phone="", office="")
 ```
 
 This function creates a new user in the `users` table of the database.
 E-mail, phone, office are useful for contacting users about their measurements.
 """
-function newuser(dsn, uname, name; email="", phone="", office="")
+function newuser(dsn, username, name; email="", phone="", office="")
     first, middle, last = "", "", ""
     names = split(name, " ")
     if length(names) == 1
@@ -22,37 +22,37 @@ function newuser(dsn, uname, name; email="", phone="", office="")
     ph = replace(phone, r"[-\+\(\)\s]", "")
     ODBC.execute!(dsn, """
     INSERT INTO users VALUES (
-        '$uname', '$first', '$middle', '$last', '$email', '$phone', '$office'
+        '$username', '$first', '$middle', '$last', '$email', '$phone', '$office'
     );
     """)
 end
 
 """
 ```
-updateuser(dsn, uname; kwargs...)
+updateuser(dsn, username; kwargs...)
 ```
 
-Update an existing user in the `users` table, identified by `uname`. Specify
+Update an existing user in the `users` table, identified by `username`. Specify
 the fields to update with keyword arguments specified in
 [`ICDataServer.newuser`](@ref).
 """
-function updateuser(dsn, uname; kwargs...)
+function updateuser(dsn, username; kwargs...)
     isempty(kwargs) && return
     pstr = reduce((a,b)->a*","*b, "$k = '$v'" for (k,v) in kwargs)
     for (k,v) in kwargs
-        ODBC.execute!(dsn, "UPDATE users SET "*pstr*" WHERE uname = $uname;")
+        ODBC.execute!(dsn, "UPDATE users SET "*pstr*" WHERE username = $username;")
     end
 end
 
 """
 ```
-deleteuser(dsn, uname)
+deleteuser(dsn, username)
 ```
 
 Delete a user from the `users` table by providing the username.
 """
-function deleteuser(dsn, uname)
-    ODBC.execute!(dsn, "DELETE FROM users WHERE uname = '$uname';")
+function deleteuser(dsn, username)
+    ODBC.execute!(dsn, "DELETE FROM users WHERE username = '$username';")
 end
 
 """
