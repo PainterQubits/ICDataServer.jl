@@ -73,6 +73,12 @@ function handle(jr::UpdateJobRequest)
     ZMQ.send(jobsock, ZMQ.Message(io))
 end
 
+function handle(r::ListUsersRequest)
+    io = IOBuffer()
+    serialize(io, Array{String}(listusers(dsn)[:username]))
+    ZMQ.send(jobsock, ZMQ.Message(io))
+end
+
 function listtables(dsn)
     ODBC.query(dsn,
         """

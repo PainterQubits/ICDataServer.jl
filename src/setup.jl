@@ -117,6 +117,12 @@ function userstable(dsn, path; filename="")
     );
     """)
 
+    # add "default" user in case it is absent from the config file.
+    ODBC.execute!(dsn, """
+    INSERT INTO users (username, first, last) VALUES ('default', 'No', 'Name')
+    ON CONFLICT (username) DO NOTHING;
+    """)
+
     ipath = joinpath(path, filename)
     if isfile(ipath)
         for d in JSON.parsefile(ipath)["users"]
@@ -126,7 +132,7 @@ function userstable(dsn, path; filename="")
             pstr = reduce((a,b)->a*","*b, "$ki = '$(d[ki])'" for ki in k)
             query = """
             INSERT INTO users ($kstr) VALUES ($vstr) ON CONFLICT (username)
-            DO UPDATE SET $pstr
+            DO UPDATE SET $pstr ;
             """
             ODBC.execute!(dsn, query)
         end
@@ -152,7 +158,7 @@ function servertable(dsn, path; filename="")
             pstr = reduce((a,b)->a*","*b, "$ki = '$(d[ki])'" for ki in k)
             query = """
             INSERT INTO servers ($kstr) VALUES ($vstr) ON CONFLICT (alias)
-            DO UPDATE SET $pstr
+            DO UPDATE SET $pstr ;
             """
             ODBC.execute!(dsn, query)
         end
