@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="no-js ie6"><![endif]-->
+<!--[if IE 7 ]><html class="no-js ie7"><![endif]-->
+<!--[if IE 8 ]><html class="no-js ie8"><![endif]-->
+<!--[if IE 9 ]><html class="no-js ie9"><![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html class="no-js"> <!--<![endif]-->
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,maximum-scale=1">
+    
+      
+        <title>Instruments - ICDataServer.jl</title>
+      
+      
+      
+      
+        <meta name="author" content="Andrew Keller">
+      
+    
+    <meta property="og:url" content="None">
+    <meta property="og:title" content="ICDataServer.jl">
+    <meta property="og:image" content="None/../">
+    <meta name="apple-mobile-web-app-title" content="ICDataServer.jl">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    
+    <link rel="shortcut icon" type="image/x-icon" href="../None">
+    <link rel="icon" type="image/x-icon" href="../None">
+    <style>
+      @font-face {
+      	font-family: 'Icon';
+      	src: url('../assets/fonts/icon.eot?52m981');
+      	src: url('../assets/fonts/icon.eot?#iefix52m981')
+               format('embedded-opentype'),
+      		   url('../assets/fonts/icon.woff?52m981')
+               format('woff'),
+      		   url('../assets/fonts/icon.ttf?52m981')
+               format('truetype'),
+      		   url('../assets/fonts/icon.svg?52m981#icon')
+               format('svg');
+      	font-weight: normal;
+      	font-style: normal;
+      }
+    </style>
+    <link rel="stylesheet" href="../assets/stylesheets/application-54f87043f3.css">
+    
+      <link rel="stylesheet" href="../assets/stylesheets/palettes-05ab2406df.css">
+    
+    
+      
+      
+      
+      <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Ubuntu:400,700|Ubuntu+Mono">
+      <style>
+        body, input {
+          font-family: 'Ubuntu', Helvetica, Arial, sans-serif;
+        }
+        pre, code {
+          font-family: 'Ubuntu Mono', 'Courier New', 'Courier', monospace;
+        }
+      </style>
+    
+    
+      <link rel="stylesheet" href="../assets/Documenter.css">
+    
+    <script src="../assets/javascripts/modernizr-4ab42b99fd.js"></script>
+    
+  </head>
+  
+  
+  
+  <body class="palette-primary-indigo palette-accent-blue">
+    
+      
+      
+    
+    <div class="backdrop">
+      <div class="backdrop-paper"></div>
+    </div>
+    <input class="toggle" type="checkbox" id="toggle-drawer">
+    <input class="toggle" type="checkbox" id="toggle-search">
+    <label class="toggle-button overlay" for="toggle-drawer"></label>
+    <header class="header">
+      <nav aria-label="Header">
+  <div class="bar default">
+    <div class="button button-menu" role="button" aria-label="Menu">
+      <label class="toggle-button icon icon-menu" for="toggle-drawer">
+        <span></span>
+      </label>
+    </div>
+    <div class="stretch">
+      <div class="title">
+        
+          <span class="path">
+            
+              
+                API <i class="icon icon-link"></i>
+              
+            
+          </span>
+        
+        Instruments
+      </div>
+    </div>
+    
+    
+    <div class="button button-search" role="button" aria-label="Search">
+      <label class="toggle-button icon icon-search" title="Search" for="toggle-search"></label>
+    </div>
+  </div>
+  <div class="bar search">
+    <div class="button button-close" role="button" aria-label="Close">
+      <label class="toggle-button icon icon-back" for="toggle-search"></label>
+    </div>
+    <div class="stretch">
+      <div class="field">
+        <input class="query" type="text" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck>
+      </div>
+    </div>
+    <div class="button button-reset" role="button" aria-label="Search">
+      <button class="toggle-button icon icon-close" id="reset-search"></button>
+    </div>
+  </div>
+</nav>
+    </header>
+    <main class="main">
+      
+      <div class="drawer">
+        <nav aria-label="Navigation">
+  
+  <a href="https://github.com/PainterQubits/ICDataServer.jl" class="project">
+    <div class="banner">
+      
+      <div class="name">
+        <strong>
+          ICDataServer.jl
+          <span class="version">
+            
+          </span>
+        </strong>
+        
+          <br>
+          PainterQubits/ICDataServer.jl
+        
+      </div>
+    </div>
+  </a>
+  <div class="scrollable">
+    <div class="wrapper">
+      
+        <ul class="repo">
+          <li class="repo-download">
+            
+            <a href="https://github.com/PainterQubits/ICDataServer.jl/archive/master.zip" target="_blank" title="Download" data-action="download">
+              <i class="icon icon-download"></i> Download
+            </a>
+          </li>
+          <li class="repo-stars">
+            <a href="https://github.com/PainterQubits/ICDataServer.jl/stargazers" target="_blank" title="Stargazers" data-action="star">
+              <i class="icon icon-star"></i> Stars
+              <span class="count">&ndash;</span>
+            </a>
+          </li>
+        </ul>
+        <hr>
+      
+      <div class="toc">
+        <ul>
+          
+            
+  <li>
+    <a class="" title="Home" href="..">
+      Home
+    </a>
+    
+  </li>
+
+          
+            
+  <li>
+    <a class="" title="Design" href="../design/">
+      Design
+    </a>
+    
+  </li>
+
+          
+            
+  <li>
+    <a class="" title="Configuration" href="../config/">
+      Configuration
+    </a>
+    
+  </li>
+
+          
+            
+  <li>
+    <span class="section">API</span>
+    <ul>
+      
+        
+  <li>
+    <a class="" title="General notes" href="../api/">
+      General notes
+    </a>
+    
+  </li>
+
+      
+        
+  <li>
+    <a class="" title="Jobs" href="../jobs/">
+      Jobs
+    </a>
+    
+  </li>
+
+      
+        
+  <li>
+    <a class="" title="Users" href="../users/">
+      Users
+    </a>
+    
+  </li>
+
+      
+        
+  <li>
+    <a class="" title="Servers" href="../servers/">
+      Servers
+    </a>
+    
+  </li>
+
+      
+        
+  <li>
+    <a class="current" title="Instruments" href="./">
+      Instruments
+    </a>
+    
+      
+      
+        <ul>
+          
+            <li class="anchor">
+              <a title="Instruments" href="#instruments">
+                Instruments
+              </a>
+            </li>
+          
+            <li class="anchor">
+              <a title="Constraints on the instruments table" href="#constraints-on-the-instruments-table">
+                Constraints on the instruments table
+              </a>
+            </li>
+          
+        </ul>
+      
+    
+  </li>
+
+      
+    </ul>
+  </li>
+
+          
+            
+  <li>
+    <span class="section">Miscellaneous</span>
+    <ul>
+      
+        
+  <li>
+    <a class="" title="License" href="../LICENSE/">
+      License
+    </a>
+    
+  </li>
+
+      
+    </ul>
+  </li>
+
+          
+        </ul>
+        
+      </div>
+    </div>
+  </div>
+</nav>
+      </div>
+      <article class="article">
+        <div class="wrapper">
+          
+            <h1>Instruments</h1>
+          
+          <p><a id='Instruments-1'></a></p>
+<h2 id="instruments">Instruments</h2>
+<p><a id='ICDataServer.newinstrument' href='#ICDataServer.newinstrument'>#</a>
+<strong><code>ICDataServer.newinstrument</code></strong> &mdash; <em>Function</em>.</p>
+<div class="codehilite"><pre><span></span>newinstrument(dsn, alias; make=&quot;&quot;, model=&quot;&quot;, serialnum=&quot;&quot;, kind=&quot;&quot;,
+    hw_server=&quot;&quot;, protocol=&quot;&quot;, ins_addr=&quot;&quot;)
+</pre></div>
+
+
+<p>Create a new instrument named <code>alias</code> in the <code>instruments</code> table.</p>
+<p><a target='_blank' href='https://github.com/PainterQubits/ICDataServer.jl/tree/514403a46b775984394168023f072cf132e1384b/src/instruments.jl#L1-L8' class='documenter-source'>source</a><br></p>
+<p><a id='ICDataServer.updateinstrument' href='#ICDataServer.updateinstrument'>#</a>
+<strong><code>ICDataServer.updateinstrument</code></strong> &mdash; <em>Function</em>.</p>
+<div class="codehilite"><pre><span></span>updateinstrument(dsn, alias; kwargs...)
+</pre></div>
+
+
+<p>Update any of the fields for an instrument named <code>alias</code>. Possible keyword arguments listed in documentation for <a href="./#ICDataServer.newinstrument"><code>ICDataServer.newinstrument</code></a>.</p>
+<p><a target='_blank' href='https://github.com/PainterQubits/ICDataServer.jl/tree/514403a46b775984394168023f072cf132e1384b/src/instruments.jl#L18-L25' class='documenter-source'>source</a><br></p>
+<p><a id='ICDataServer.deleteinstrument' href='#ICDataServer.deleteinstrument'>#</a>
+<strong><code>ICDataServer.deleteinstrument</code></strong> &mdash; <em>Function</em>.</p>
+<div class="codehilite"><pre><span></span>deleteinstrument(dsn, alias)
+</pre></div>
+
+
+<p>Delete instrument named <code>alias</code> from the <code>instruments</code> table.</p>
+<p><a target='_blank' href='https://github.com/PainterQubits/ICDataServer.jl/tree/514403a46b775984394168023f072cf132e1384b/src/instruments.jl#L32-L38' class='documenter-source'>source</a><br></p>
+<p><a id='ICDataServer.listinstruments' href='#ICDataServer.listinstruments'>#</a>
+<strong><code>ICDataServer.listinstruments</code></strong> &mdash; <em>Function</em>.</p>
+<div class="codehilite"><pre><span></span>listinstruments(dsn)
+</pre></div>
+
+
+<p>List instruments in the <code>instruments</code> table.</p>
+<p><a target='_blank' href='https://github.com/PainterQubits/ICDataServer.jl/tree/514403a46b775984394168023f072cf132e1384b/src/instruments.jl#L44-L50' class='documenter-source'>source</a><br></p>
+<p><a id='Constraints-on-the-instruments-table-1'></a></p>
+<h2 id="constraints-on-the-instruments-table">Constraints on the <code>instruments</code> table</h2>
+<p>To enforce consistent conventions in the <code>instruments</code> table, there are some supporting tables that list the allowed values for an associated column in the <code>instruments</code> table.</p>
+<p><a id='instrumentkinds-table-1'></a></p>
+<h3 id="instrumentkinds-table"><code>instrumentkinds</code> table</h3>
+<p>This table, consisting of one column <code>kind</code>, lists the different kinds of instruments that may be used in a measurement. More values can be added manually via a database query or via the <code>instrumentkinds.json</code> setup file to accommodate new instrument types.</p>
+          <aside class="copyright" role="note">
+            
+            Documentation built with
+            <a href="http://www.mkdocs.org" target="_blank">MkDocs</a>
+            using the
+            <a href="http://squidfunk.github.io/mkdocs-material/" target="_blank">
+              Material
+            </a>
+            theme.
+          </aside>
+          
+            <footer class="footer">
+              
+  <nav class="pagination" aria-label="Footer">
+    <div class="previous">
+      
+        <a href="../servers/" title="Servers">
+          <span class="direction">
+            Previous
+          </span>
+          <div class="page">
+            <div class="button button-previous" role="button" aria-label="Previous">
+              <i class="icon icon-back"></i>
+            </div>
+            <div class="stretch">
+              <div class="title">
+                Servers
+              </div>
+            </div>
+          </div>
+        </a>
+      
+    </div>
+    <div class="next">
+      
+        <a href="../LICENSE/" title="License">
+          <span class="direction">
+            Next
+          </span>
+          <div class="page">
+            <div class="stretch">
+              <div class="title">
+                License
+              </div>
+            </div>
+            <div class="button button-next" role="button" aria-label="Next">
+              <i class="icon icon-forward"></i>
+            </div>
+          </div>
+        </a>
+      
+    </div>
+  </nav>
+
+            </footer>
+          
+        </div>
+      </article>
+      <div class="results" role="status" aria-live="polite">
+        <div class="scrollable">
+          <div class="wrapper">
+            <div class="meta"></div>
+            <div class="list"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script>
+      var base_url = '..';
+      var repo_id  = 'PainterQubits/ICDataServer.jl';
+    </script>
+    <script src="../assets/javascripts/application-997097ee0c.js"></script>
+    
+      <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+    
+      <script src="../assets/mathjaxhelper.js"></script>
+    
+    
+  </body>
+</html>
