@@ -1,7 +1,7 @@
 module ICDataServer
 
 using ICCommon
-using Plots
+# using Plots
 using JSON
 import ZMQ
 import ODBC
@@ -15,29 +15,32 @@ export newjob, updatejob
 const ctx = ZMQ.Context()
 const jobsock = ZMQ.Socket(ctx, ZMQ.REP)
 
-confpath = joinpath(Pkg.dir("ICDataServer"), "deps", "config.json")
+confpath = joinpath(dirname(dirname(@__FILE__)), "deps", "config.json")
 if isfile(confpath)
-    confd = JSON.parsefile(confpath)
-    if reduce(&, k in keys(confd) for k in
-        ("jobsock", "dsn", "username", "password"))
+    const confd = JSON.parsefile(confpath)
+    if !haskey(confd, "jobsock")
+        error("set `jobsock` key in $(confpath) to have a valid ",
+            "ZeroMQ connection string.")
+    elseif !haskey(confd, "dsn")
+        error("set `dsn` key in $(confpath) to the name of a valid ODBC DSN.")
+    end
 
-        ZMQ.bind(jobsock, confd["jobsock"])
-        const dsn = ODBC.DSN(confd["dsn"], confd["username"], confd["password"])
-    else
-        if !"jobsock" in keys(confd)
-            error("set `jobsock` key in $(confpath) to have a valid ",
-                "ZeroMQ connection string.")
-        elseif !"dsn" in keys(confd)
-            error("set `dsn` key in $(confpath) to have a valid DSN identifier.")
-        elseif !"username" in keys(confd)
-            error("set `username` key in $(confpath) to a valid username.")
-        else
-            error("set `password` key in $(confpath) for the given user.")
-        end
+    if haskey(confd, "password") && !haskey(confd, "username")
+        error("set `username` key in $(confpath) if providing a `password` key.")
+    end
+
+    if !haskey(confd, "username")
+        confd["username"] = ""
+    end
+    if !haskey(confd, "password")
+        confd["password"] = ""
     end
 else
-    error("config file not found at $(confpath).")
+    error("configuration file not found at $(confpath).")
 end
+
+const dsn = ODBC.DSN(confd["dsn"], confd["username"], confd["password"])
+ZMQ.bind(jobsock, confd["jobsock"])
 
 function serve(;debug=false)
     while true
