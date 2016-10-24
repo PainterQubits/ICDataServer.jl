@@ -1,8 +1,6 @@
-## Users
-
 ```@docs
-newuser
-updateuser
-deleteuser
-listusers
+ICDataServer.newuser
+ICDataServer.updateuser
+ICDataServer.deleteuser
+ICDataServer.listusers
 ```

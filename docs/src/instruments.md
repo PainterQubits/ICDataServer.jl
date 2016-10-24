@@ -1,10 +1,10 @@
 ## Instruments
 
 ```@docs
-newinstrument
-updateinstrument
-deleteinstrument
-listinstruments
+ICDataServer.newinstrument
+ICDataServer.updateinstrument
+ICDataServer.deleteinstrument
+ICDataServer.listinstruments
 ```
 
 ## Constraints on the `instruments` table

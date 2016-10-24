@@ -1,8 +1,6 @@
-## Servers
-
 ```@docs
-newserver
-updateserver
-deleteserver
-listservers
+ICDataServer.newserver
+ICDataServer.updateserver
+ICDataServer.deleteserver
+ICDataServer.listservers
 ```

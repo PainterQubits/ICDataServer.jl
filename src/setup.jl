@@ -14,9 +14,9 @@ Initialize a database with the tables needed to run ICDataServer:
 The creation of the tables can proceed without additional input, but in some
 cases it may make sense for the tables to be automatically filled with data.
 
-If new instrument kinds are added to `deps/inskinds.json`, they will be added
-to `instrumentkinds` table. If kinds are encountered in the database that are
-not in the file, they remain in the database and are not deleted.
+If new instrument kinds are added to `deps/instrumentkinds.json`, they will be
+added to `instrumentkinds` table. If kinds are encountered in the database that
+are not in the file, they remain in the database and are not deleted.
 
 If new users are added to `deps/users.json`, they will be "upserted" into the
 `users` table (users are created if necessary; if an existing user name is

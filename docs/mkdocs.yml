@@ -27,7 +27,9 @@ docs_dir: 'build'
 pages:
 - Home: index.md
 - Design: design.md
+- Configuration: config.md
 - API:
+    - 'General notes': api.md
     - 'Jobs': jobs.md
     - 'Users': users.md
     - 'Servers': servers.md

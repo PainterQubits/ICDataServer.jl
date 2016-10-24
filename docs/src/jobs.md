@@ -1,6 +1,4 @@
-## Jobs
-
 ```@docs
-newjob
-updatejob
+ICDataServer.newjob
+ICDataServer.updatejob
 ```
