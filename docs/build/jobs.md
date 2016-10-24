@@ -11,7 +11,7 @@ newjob(dsn; cryostat="", username="", device="",
 Create a new job in the `jobs` table. This function will return a `DataFrame` containing the columns `job_id` and `jobsubmit` with the inserted job id and job submission time.
 
 
-<a target='_blank' href='https://github.com/PainterQubits/ICDataServer.jl/tree/514403a46b775984394168023f072cf132e1384b/src/jobs.jl#L7-L16' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/PainterQubits/ICDataServer.jl/tree/11903b0154a7a722d12cec3a524d64803928adfe/src/jobs.jl#L7-L16' class='documenter-source'>source</a><br>
 
 <a id='ICDataServer.updatejob' href='#ICDataServer.updatejob'>#</a>
 **`ICDataServer.updatejob`** &mdash; *Function*.
@@ -25,5 +25,5 @@ updatejob(dsn, job_id; kwargs...)
 Update an existing job in the `jobs` table based on its `job_id`. Specify the fields to update with keyword arguments specified in [`ICDataServer.newjob`](jobs.md#ICDataServer.newjob).
 
 
-<a target='_blank' href='https://github.com/PainterQubits/ICDataServer.jl/tree/514403a46b775984394168023f072cf132e1384b/src/jobs.jl#L31-L39' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/PainterQubits/ICDataServer.jl/tree/11903b0154a7a722d12cec3a524d64803928adfe/src/jobs.jl#L31-L39' class='documenter-source'>source</a><br>
 

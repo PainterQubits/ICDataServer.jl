@@ -26,7 +26,7 @@ If new instrument kinds are added to `deps/instrumentkinds.json`, they will be a
 If new users are added to `deps/users.json`, they will be "upserted" into the `users` table (users are created if necessary; if an existing user name is attempted to be inserted into the table, then that user has their info updated from the json file). Existing users not found in users.json remain in the table.
 
 
-<a target='_blank' href='https://github.com/PainterQubits/ICDataServer.jl/tree/514403a46b775984394168023f072cf132e1384b/src/setup.jl#L1-L25' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/PainterQubits/ICDataServer.jl/tree/11903b0154a7a722d12cec3a524d64803928adfe/src/setup.jl#L1-L25' class='documenter-source'>source</a><br>
 
 
 <a id='deps/config.json-1'></a>

@@ -38,6 +38,10 @@ Estimated burden: twenty minutes.
   + Port: `5432` (or whatever you chose during PostgreSQL installation)
   + Username and password as installed. Ideally a different user would be created.
 
++ Install ICCommon. This package provides basic definitions that should be shared
+  by the InstrumentControl and ICDataServer packages, which may be running on
+  separate processes or even separate computers:
+  `Pkg.clone("https://github.com/painterqubits/ICCommon.jl.git")`
 
 + Install ICDataServer: `Pkg.clone("https://github.com/painterqubits/ICDataServer.jl.git")`
 
