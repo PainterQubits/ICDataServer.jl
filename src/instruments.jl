@@ -49,5 +49,5 @@ listinstruments(dsn)
 List instruments in the `instruments` table.
 """
 function listinstruments(dsn)
-    ODBC.query(dsn, "SELECT * FROM instruments;")
+    ODBC.query(dsn, "SELECT * FROM instruments;"; weakrefstrings=false)
 end
