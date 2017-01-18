@@ -57,10 +57,10 @@ function handle(jr::ICCommon.UpdateJobRequest)
 end
 
 handle(r::ICCommon.ListUsersRequest) =
-    ICCommon.ssend(dbsock, deserialize, Array{String}(listusers(dsn)[:username]))
+    ICCommon.ssend(dbsock, Array{String}(listusers(dsn)[:username]))
 
 handle(r::ICCommon.ListInstrumentsRequest) =
-    ICCommon.ssend(dbsock, deserialize, listinstruments(dsn))
+    ICCommon.ssend(dbsock, listinstruments(dsn))
 
 function listtables(dsn)
     ODBC.query(dsn,
