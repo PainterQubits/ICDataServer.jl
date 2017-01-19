@@ -1,11 +1,11 @@
 module ICDataServer
 
 using ICCommon
-# using Plots
 using JSON
 import ZMQ, ODBC
 using Base.Cartesian, JLD
 using AxisArrays
+using JuliaWebAPI
 
 import AxisArrays: axes
 import Base.Cartesian.inlineanonymous
@@ -18,71 +18,9 @@ export newserver, updateserver, deleteserver, listservers
 export newnote, listnotes
 export newjob, updatejob
 
-const ctx = ZMQ.Context()
-const dbsock = ZMQ.Socket(ctx, ZMQ.REP)
-
 include("config.jl")
 
-const dsn = ODBC.DSN(confd["dsn"], confd["username"], confd["password"])
-ZMQ.bind(dbsock, confd["dbsock"])
-
-function serve(;debug=false)
-    while true
-        msg = ZMQ.recv(dbsock)
-        out = convert(IOStream, msg)
-        seekstart(out)
-        d = deserialize(out)
-        debug && println(STDOUT, d)
-        handle(d)
-    end
-end
-
-function handle(jr::ICCommon.NewJobRequest)
-    job_id, jobsubmit = newjob(dsn; jr.args...)
-    ICCommon.ssend(dbsock, (job_id, jobsubmit))
-end
-
-function handle(jr::ICCommon.UpdateJobRequest)
-    response = try
-        updatejob(dsn, jr.job_id; jr.args...)
-        true
-    catch y
-        false   # catch errors so that we can issue a proper reply regardless
-    end
-
-    # reply with `true` or `false` for success
-    # (a reply must be sent to avoid zmq errors with a REQ/REP pattern)
-    # maybe in the future we'd actually pass the error back
-    ICCommon.ssend(dbsock, response)
-end
-
-handle(r::ICCommon.ListUsersRequest) =
-    ICCommon.ssend(dbsock, Array{String}(listusers(dsn)[:username]))
-
-handle(r::ICCommon.ListInstrumentsRequest) =
-    ICCommon.ssend(dbsock, listinstruments(dsn))
-
-function listtables(dsn)
-    ODBC.query(dsn,
-        """
-        SELECT table_name FROM information_schema.tables
-            WHERE table_type = 'BASE TABLE'
-                AND table_schema NOT IN ('pg_catalog', 'information_schema');
-        """
-    )[:table_name]
-end
-
-"""
-```
-the_nuclear_option(dsn)
-```
-
-Delete all tables associated with `ICDataServer`. Probably not a good idea.
-"""
-function the_nuclear_option(dsn)
-    ODBC.execute!(dsn, """DROP TABLE IF EXISTS users, jobs, servers,
-        instruments, instrumentkinds, notes CASCADE;""")
-end
+const dsn = ODBC.DSN(confd["dsn"])
 
 include("users.jl")
 include("servers.jl")
@@ -90,5 +28,89 @@ include("instruments.jl")
 include("jobs.jl")
 include("notes.jl")
 include("setup.jl")
+
+# Initialization
+
+const global ctx = Ref{ZMQ.Context}()
+
+const global apiserial = Ref{APIResponder{ZMQTransport,SerializedMsgFormat}}()
+const global apijson = Ref{APIResponder{ZMQTransport,JSONMsgFormat}}()
+const global apihttp = Ref{APIInvoker{ZMQTransport,JSONMsgFormat}}()
+
+const global apiserialopened = Ref{Bool}(false)
+const global apijsonopened = Ref{Bool}(false)
+const global apihttpopened = Ref{Bool}(false)
+
+"""
+    apiserialresponder()
+If needed, opens a JuliaWebAPI.APIResponder with ZMQTransport and SerializedMsgFormat
+to service requests to the ICDataServer. Returns the APIResponder.
+"""
+function apiserialresponder()
+    if !apiserialopened[]
+        apiserial[] = APIResponder(
+            ZMQTransport(confd["serialsocket"], ZMQ.REP, true, ctx[]),
+            SerializedMsgFormat(), "", false)
+        apiserialopened[] = true
+    end
+    return apiserial[]
+end
+
+"""
+    apijsonresponder()
+If needed, opens a JuliaWebAPI.APIResponder with ZMQTransport and JSONMsgFormat
+to service requests to the ICDataServer. Returns the APIResponder.
+"""
+function apijsonresponder()
+    if !apijsonopened[]
+        apijson[] = APIResponder(
+            ZMQTransport(confd["jsonsocket"], ZMQ.REP, true, ctx[]),
+            JSONMsgFormat(), "", false)
+        apijsonopened[] = true
+    end
+    return apijson[]
+end
+
+"""
+    apihttpresponder()
+If needed, opens a JuliaWebAPI.APIInvoker with ZMQTransport and JSONMsgFormat
+to serve HTTP for interacting with the ICDataServer. Returns the APIInvoker.
+"""
+function apihttpinvoker()
+    if !apihttpopened[]
+        apihttp[] = APIInvoker(
+            ZMQTransport(confd["jsonsocket"], ZMQ.REQ, false, ctx[]),
+            JSONMsgFormat())
+        apihttpopened[] = true
+    end
+    return apihttp[]
+end
+
+const _ipcapi = (:newjob, :updatejob, :listusers, :listinstruments, :ipcapi)
+const _webapi = (:listusers, :listinstruments, :webapi)
+
+ipcapi() = _ipcapi
+webapi() = _webapi
+
+function __init__()
+    ctx[] = ZMQ.Context()
+    if !haskey(ENV, "ICTESTMODE")
+        for f in ipcapi()
+            @eval JuliaWebAPI.register(apiserialresponder(), $f)
+        end
+        for f in webapi()
+            @eval JuliaWebAPI.register(apijsonresponder(), $f, resp_json=true,
+                resp_headers=Dict{String,String}(
+                    "Content-Type" => "application/json; charset=utf-8",
+                    "Access-Control-Allow-Origin" => "http://localhost",
+                    "Access-Control-Allow-Methods" => "GET"))
+        end
+        JuliaWebAPI.process(apiserialresponder(); async=true)
+        JuliaWebAPI.process(apijsonresponder(); async=true)
+        @async JuliaWebAPI.run_http(apihttpinvoker(), 8889)
+    end
+end
+
+
 
 end

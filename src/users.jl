@@ -1,12 +1,12 @@
 """
 ```
-newuser(dsn, username, name; email="", phone="", office="")
+newuser(username, name; email="", phone="", office="")
 ```
 
 This function creates a new user in the `users` table of the database.
 E-mail, phone, office are useful for contacting users about their measurements.
 """
-function newuser(dsn, username, name; email="", phone="", office="")
+function newuser(username, name; email="", phone="", office="")
     first, middle, last = "", "", ""
     names = split(name, " ")
     if length(names) == 1
@@ -29,14 +29,14 @@ end
 
 """
 ```
-updateuser(dsn, username; kwargs...)
+updateuser(username; kwargs...)
 ```
 
 Update an existing user in the `users` table, identified by `username`. Specify
 the fields to update with keyword arguments specified in
 [`ICDataServer.newuser`](@ref).
 """
-function updateuser(dsn, username; kwargs...)
+function updateuser(username; kwargs...)
     isempty(kwargs) && return
     pstr = reduce((a,b)->a*","*b, "$k = '$v'" for (k,v) in kwargs)
     for (k,v) in kwargs
@@ -46,22 +46,21 @@ end
 
 """
 ```
-deleteuser(dsn, username)
+deleteuser(username)
 ```
 
 Delete a user from the `users` table by providing the username.
 """
-function deleteuser(dsn, username)
+function deleteuser(username)
     ODBC.execute!(dsn, "DELETE FROM users WHERE username = '$username';")
 end
 
 """
 ```
-listusers(dsn)
+listusers()
 ```
 
 List all users in the `users` table.
 """
-function listusers(dsn)
-    ODBC.query(dsn, "SELECT * FROM users;")
-end
+listusers() = Array{String}(ODBC.query(dsn, "SELECT * FROM users;";
+    weakrefstrings=false)[:username])

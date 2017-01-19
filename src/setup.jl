@@ -1,8 +1,28 @@
 """
-```
-setuptables()
-```
+    listtables()
+List tables in ICDataServer's database. For diagnostics.
+"""
+function listtables()
+    ODBC.query(dsn,
+        """
+        SELECT table_name FROM information_schema.tables
+            WHERE table_type = 'BASE TABLE'
+                AND table_schema NOT IN ('pg_catalog', 'information_schema');
+        """;
+    weakrefstrings=false)[:table_name]
+end
 
+"""
+    the_nuclear_option()
+Delete all tables associated with `ICDataServer`. Probably not a good idea.
+"""
+function the_nuclear_option()
+    ODBC.execute!(dsn, """DROP TABLE IF EXISTS users, jobs, servers,
+        instruments, instrumentkinds, notes CASCADE;""")
+end
+
+"""
+    setuptables()
 Initialize a database with the tables needed to run ICDataServer:
   - `users`
   - `servers`
@@ -23,7 +43,7 @@ If new users are added to `deps/users.json`, they will be "upserted" into the
 attempted to be inserted into the table, then that user has their info updated
 from the json file). Existing users not found in users.json remain in the table.
 """
-function setuptables(dsn, path="")
+function setuptables(path="")
     if path == ""
         # request path from user
         println("Path to directory with setup files? [defaults to ICDataServer/deps]:")
@@ -37,20 +57,20 @@ function setuptables(dsn, path="")
     !ispath(path) && error("could not find path.")
     println(path)
 
-    userstable(dsn, path; filename = "users.json")
-    servertable(dsn, path; filename = "servers.json")
-    restrictiontable(dsn, path; filename = "instrumentkinds.json",
+    userstable(path; filename = "users.json")
+    servertable(path; filename = "servers.json")
+    restrictiontable(path; filename = "instrumentkinds.json",
         tablename = "instrumentkinds", colname = "kind")
     # restrictiontable(dsn, path; filename = "instrumentmakes.json",
     #     tablename = "instrumentmakes", colname = "make")
     # restrictiontable(dsn, path; filename = "instrumentmodels.json",
     #     tablename = "instrumentmodels", colname = "model")
-    instrtable(dsn)
-    jobstable(dsn)
-    notestable(dsn)
+    instrtable()
+    jobstable()
+    notestable()
 end
 
-function jobstable(dsn)
+function jobstable()
     ODBC.execute!(dsn,
     """
     CREATE TABLE IF NOT EXISTS jobs(
@@ -68,7 +88,7 @@ function jobstable(dsn)
     """)
 end
 
-function instrtable(dsn)
+function instrtable()
     ODBC.execute!(dsn,
     """
     CREATE TABLE IF NOT EXISTS instruments(
@@ -84,7 +104,7 @@ function instrtable(dsn)
     """)
 end
 
-function restrictiontable(dsn, path; filename="", tablename="", colname="")
+function restrictiontable(path; filename="", tablename="", colname="")
     ODBC.execute!(dsn,
     """
     CREATE TABLE IF NOT EXISTS $tablename(
@@ -94,15 +114,14 @@ function restrictiontable(dsn, path; filename="", tablename="", colname="")
 
     ipath = joinpath(path, filename)
     if isfile(ipath)
-        stmt = ODBC.prepare(dsn,
-            "INSERT INTO $tablename VALUES (?) ON CONFLICT DO NOTHING;")
         for t in JSON.parsefile(ipath)[colname]
-            ODBC.execute!(stmt, (t,))
+            query = "INSERT INTO $tablename VALUES ('$t') ON CONFLICT DO NOTHING;"
+            ODBC.execute!(dsn, query)
         end
     end
 end
 
-function userstable(dsn, path; filename="")
+function userstable(path; filename="")
 
     ODBC.execute!(dsn,
     """
@@ -139,7 +158,7 @@ function userstable(dsn, path; filename="")
     end
 end
 
-function servertable(dsn, path; filename="")
+function servertable(path; filename="")
     ODBC.execute!(dsn,
     """
     CREATE TABLE IF NOT EXISTS servers(
@@ -165,7 +184,7 @@ function servertable(dsn, path; filename="")
     end
 end
 
-function notestable(dsn)
+function notestable()
     ODBC.execute!(dsn,
     """
     CREATE TABLE IF NOT EXISTS notes(

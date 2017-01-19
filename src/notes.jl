@@ -1,13 +1,13 @@
 """
 ```
-newnote(dsn, job_id, username, note)
+newnote(job_id, username, note)
 ```
 
 Create a new note in the `notes` table. A note is associated with a particular
 job and therefore a `job_id` is required, along with a `username` to indicate
 who wrote the note.
 """
-function newnote(dsn, job_id, username, note)
+function newnote(job_id, username, note)
     ODBC.execute!(dsn, """
         INSERT INTO notes (job_id, username, dt, note) VALUES
             ($job_id, '$username', '$(now())', '$note');
@@ -16,14 +16,14 @@ end
 
 """
 ```
-listnotes(dsn; job_id=0, username="")
+listnotes(; job_id=0, username="")
 ```
 
 If keyword arguments `job_id` and/or `username` are provided, list the notes
 in the `notes` table that are at the intersection of those conditions.
 Otherwise, list all notes in the `notes` table.
 """
-function listnotes(dsn; job_id=0, username="")
+function listnotes(; job_id::Integer=0, username::String="")
     if job_id != 0 && username != ""
         wherestr = "WHERE "
         if job_id != 0
@@ -38,5 +38,5 @@ function listnotes(dsn; job_id=0, username="")
 
     ODBC.query(dsn, """
         SELECT job_id, username, dt, note FROM notes $wherestr;
-    """)
+    """; weakrefstrings=false)
 end
